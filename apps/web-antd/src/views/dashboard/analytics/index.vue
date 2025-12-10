@@ -76,10 +76,18 @@ const chartTabs: TabOption[] = [
     </AnalysisChartsTabs>
 
     <div class="mt-5 w-full md:flex">
-      <AnalysisChartCard class="mt-5 md:mr-4 md:mt-0 md:w-1/3" title="访问数量">
+      <AnalysisChartCard
+        class="mt-5 md:mr-4 md:mt-0 md:w-1/3"
+        title="访问数量"
+        v-access:code="'analytics:query'"
+      >
         <AnalyticsVisitsData />
       </AnalysisChartCard>
-      <AnalysisChartCard class="mt-5 md:mr-4 md:mt-0 md:w-1/3" title="访问来源">
+      <AnalysisChartCard
+        class="mt-5 md:mr-4 md:mt-0 md:w-1/3"
+        title="访问来源"
+        v-access:code="'analytics:query2'"
+      >
         <AnalyticsVisitsSource />
       </AnalysisChartCard>
       <AnalysisChartCard class="mt-5 md:mt-0 md:w-1/3" title="访问来源">

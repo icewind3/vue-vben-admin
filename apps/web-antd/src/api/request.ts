@@ -50,10 +50,11 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
    */
   async function doRefreshToken() {
     const accessStore = useAccessStore();
-    const resp = await refreshTokenApi();
-    const newToken = resp.data;
-    accessStore.setAccessToken(newToken);
-    return newToken;
+    const res = await refreshTokenApi();
+    const { access_token, refresh_token } = res.data;
+    accessStore.setAccessToken(access_token);
+    accessStore.setRefreshToken(refresh_token);
+    return access_token;
   }
 
   function formatToken(token: null | string) {

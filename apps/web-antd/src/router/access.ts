@@ -30,6 +30,8 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
         duration: 1.5,
       });
       return await getAllMenusApi();
+      // const accessRoutes = getAllRoutes();
+      // return [...accessRoutes];
     },
     // 可以指定没有权限跳转403页面
     forbiddenComponent,

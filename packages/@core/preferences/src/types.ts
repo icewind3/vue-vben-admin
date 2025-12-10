@@ -277,6 +277,8 @@ interface WidgetPreferences {
   refresh: boolean;
   /** 是否显示侧边栏显示/隐藏部件 */
   sidebarToggle: boolean;
+  /** 是否显示设置按钮 */
+  systemConfig: boolean;
   /** 是否显示主题切换部件 */
   themeToggle: boolean;
   /** 是否显示时区部件 */

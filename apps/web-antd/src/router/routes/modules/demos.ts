@@ -4,14 +4,14 @@ import { $t } from '#/locales';
 
 const routes: RouteRecordRaw[] = [
   {
+    name: 'Demos',
+    path: '/demos',
     meta: {
       icon: 'ic:baseline-view-in-ar',
       keepAlive: true,
       order: 1000,
       title: $t('demos.title'),
     },
-    name: 'Demos',
-    path: '/demos',
     children: [
       {
         meta: {

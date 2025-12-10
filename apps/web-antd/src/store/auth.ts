@@ -10,7 +10,7 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
-import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
+import { getAccessCodesApi, getUserInfoApi, loginApi } from '#/api';
 import { $t } from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -33,19 +33,21 @@ export const useAuthStore = defineStore('auth', () => {
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { accessToken } = await loginApi(params);
+      const res = await loginApi(params);
+      const { access_token, refresh_token } = res.data;
 
       // 如果成功获取到 accessToken
-      if (accessToken) {
-        accessStore.setAccessToken(accessToken);
+      if (access_token) {
+        accessStore.setAccessToken(access_token);
+        accessStore.setRefreshToken(refresh_token);
 
         // 获取用户信息并存储到 accessStore 中
         const [fetchUserInfoResult, accessCodes] = await Promise.all([
           fetchUserInfo(),
           getAccessCodesApi(),
         ]);
-
         userInfo = fetchUserInfoResult;
+        userInfo.realName = userInfo?.name;
 
         userStore.setUserInfo(userInfo);
         accessStore.setAccessCodes(accessCodes);
@@ -55,9 +57,12 @@ export const useAuthStore = defineStore('auth', () => {
         } else {
           onSuccess
             ? await onSuccess?.()
-            : await router.push(
-                userInfo.homePath || preferences.app.defaultHomePath,
-              );
+            : await router.push(preferences.app.defaultHomePath);
+          // onSuccess
+          //   ? await onSuccess?.()
+          //   : await router.push(
+          //       userInfo.homePath || preferences.app.defaultHomePath,
+          //     );
         }
 
         if (userInfo?.realName) {
@@ -78,11 +83,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout(redirect: boolean = true) {
-    try {
-      await logoutApi();
-    } catch {
-      // 不做任何处理
-    }
+    // try {
+    //   await logoutApi();
+    // } catch {
+    //   // 不做任何处理
+    // }
     resetAllStores();
     accessStore.setLoginExpired(false);
 

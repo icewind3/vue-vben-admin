@@ -134,6 +134,7 @@ const defaultPreferences: Preferences = {
     notification: true,
     refresh: true,
     sidebarToggle: true,
+    systemConfig: true,
     themeToggle: true,
     timezone: true,
   },

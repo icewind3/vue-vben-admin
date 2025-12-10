@@ -11,6 +11,7 @@ const logoDark = computed(() => preferences.logo.sourceDark);
 
 <template>
   <AuthPageLayout
+    :toolbar-list="['theme']"
     :app-name="appName"
     :logo="logo"
     :logo-dark="logoDark"

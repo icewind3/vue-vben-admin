@@ -1,3 +1,5 @@
+import { useAccessStore } from '@vben/stores';
+
 import qs from 'qs';
 
 import { baseRequestClient, requestClient } from '#/api/request';
@@ -9,7 +11,6 @@ export const ContentTypeEnum = {
   formURLEncoded: 'application/x-www-form-urlencoded;charset=UTF-8',
 };
 export enum GrantTypeEnum {
-  DEPT = 'dept',
   PASSWORD = 'password',
   REFRESH_TOKEN = 'refresh_token',
 }
@@ -23,12 +24,11 @@ export namespace AuthApi {
 
   /** 登录接口返回值 */
   export interface LoginResult {
-    accessToken: string;
-  }
-
-  export interface RefreshTokenResult {
-    data: string;
-    status: number;
+    data: {
+      access_token: string;
+      expires_in: string;
+      refresh_token: string;
+    };
   }
 }
 
@@ -61,9 +61,19 @@ export async function loginApi(data: AuthApi.LoginParams) {
  * 刷新accessToken
  */
 export async function refreshTokenApi() {
-  return baseRequestClient.post<AuthApi.RefreshTokenResult>('/auth/refresh', {
-    withCredentials: true,
-  });
+  const accessStore = useAccessStore();
+
+  return baseRequestClient.post<AuthApi.LoginResult>(
+    '/oauth2/token',
+    {
+      refresh_token: accessStore.refreshToken,
+      grant_type: GrantTypeEnum.REFRESH_TOKEN,
+    },
+    {
+      withCredentials: true,
+      headers: createAuthHeader(),
+    },
+  );
 }
 
 /**
@@ -79,5 +89,5 @@ export async function logoutApi() {
  * 获取用户权限码
  */
 export async function getAccessCodesApi() {
-  return requestClient.get<string[]>('/auth/codes');
+  return requestClient.get<string[]>('/sys_menu/permissions');
 }

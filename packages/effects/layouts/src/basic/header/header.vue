@@ -49,7 +49,10 @@ const rightSlots = computed(() => {
     });
   }
 
-  if (preferencesButtonPosition.value.header) {
+  if (
+    preferencesButtonPosition.value.header &&
+    preferences.widget.systemConfig
+  ) {
     list.push({
       index: REFERENCE_VALUE + 10,
       name: 'preferences',
