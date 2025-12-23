@@ -7,7 +7,7 @@ import { LOGIN_PATH } from '@vben/constants';
 import { preferences } from '@vben/preferences';
 import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 
-import { notification } from 'ant-design-vue';
+import { message, notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
 import { getAccessCodesApi, getUserInfoApi, loginApi } from '#/api';
@@ -73,6 +73,14 @@ export const useAuthStore = defineStore('auth', () => {
           });
         }
       }
+    } catch (error: any) {
+      // 处理登录错误
+      // 检查错误对象中是否有message字段（直接在error对象中）
+      if (error?.message) {
+        message.error(error.message);
+      }
+      // 重新抛出错误，保持原有的错误处理流程
+      throw error;
     } finally {
       loginLoading.value = false;
     }
