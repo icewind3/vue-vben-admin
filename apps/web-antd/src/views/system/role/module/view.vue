@@ -6,7 +6,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
   zIndex: 999,
   title: '详情',
   showCancelButton: false,
-  // class: 'w-1/2',
   onConfirm: () => {
     drawerApi.close();
   },

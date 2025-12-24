@@ -48,5 +48,9 @@
     "qs": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
+  },
+  "devDependencies": {
+    "unplugin-auto-import": "^20.3.0",
+    "unplugin-vue-components": "^30.0.0"
   }
 }

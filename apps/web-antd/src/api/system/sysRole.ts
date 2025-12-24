@@ -35,11 +35,11 @@ export const apiSysRolePage = async (
   });
 };
 
-export const apiSysRoleView = async (params?: {
-  id: number | string;
-}): Promise<SysRoleApi.SysRole> => {
+export const apiSysRoleView = async (
+  id: number,
+): Promise<SysRoleApi.SysRole> => {
   return requestClient.get('/sys_role/view', {
-    params,
+    params: { id },
   });
 };
 
@@ -49,20 +49,22 @@ export const apiSysRoleCreate = async (data: any): Promise<Recordable<any>> => {
   });
 };
 
-export const apiSysRoleUpdate = async (
-  id: number,
-  data: any,
-): Promise<Recordable<any>> => {
-  return requestClient.put(`/sys_role/update/${id}`, data);
+export const apiSysRoleUpdate = async (data: any): Promise<Recordable<any>> => {
+  return requestClient.put(`/sys_role/update`, data);
 };
 
-export const apiSysRoleUpdateStatus = async (
-  id: number,
-  data: {
-    enabled: boolean;
-  },
-): Promise<Recordable<any>> => {
-  return requestClient.put(`/sys_role/update_status/${id}`, data);
+export const apiSysRoleAuthorize = async (data: {
+  id: number;
+  permissions: [number];
+}): Promise<Recordable<any>> => {
+  return requestClient.post(`/sys_role/authorize`, data);
+};
+
+export const apiSysRoleUpdateStatus = async (data: {
+  enabled: boolean;
+  id: number | string;
+}): Promise<Recordable<any>> => {
+  return requestClient.put(`/sys_role/update_status`, data);
 };
 
 export const apiSysRoleDelete = async (

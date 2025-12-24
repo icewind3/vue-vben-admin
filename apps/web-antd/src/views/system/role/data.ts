@@ -44,6 +44,30 @@ export function useFormSchema(): VbenFormSchema[] {
   ];
 }
 
+export function usePermissionFormSchema(): VbenFormSchema[] {
+  return [
+    {
+      component: 'Input',
+      fieldName: 'code',
+      label: '角色编码',
+      disabled: true,
+    },
+    {
+      component: 'Input',
+      fieldName: 'name',
+      label: '角色名称',
+      disabled: true,
+    },
+    {
+      component: 'Input',
+      fieldName: 'permissions',
+      formItemClass: 'items-start',
+      label: '授权',
+      modelPropName: 'modelValue',
+    },
+  ];
+}
+
 export function useGridFormSchema(): VbenFormSchema[] {
   return [
     {
@@ -132,8 +156,13 @@ export function useColumns<T = SysRoleApi.SysRole>(
         name: 'CellOperation',
         options: [
           {
+            text: '授权',
+            code: 'authorize',
+            show: hasAccessByCodes(['sys_role:authorize']),
+          },
+          {
             code: 'edit',
-            show: hasAccessByCodes(['sys_role:edit']),
+            show: hasAccessByCodes(['sys_role:update']),
           },
           {
             code: 'delete',
@@ -147,9 +176,7 @@ export function useColumns<T = SysRoleApi.SysRole>(
       },
       field: 'operation',
       fixed: 'right',
-      showOverflow: true,
       title: '操作',
-      width: 160,
     },
   ];
 }

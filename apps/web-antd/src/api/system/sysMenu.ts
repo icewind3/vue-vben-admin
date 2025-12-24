@@ -97,4 +97,15 @@ async function getMenuList() {
   return requestClient.get<Array<SysMenuApi.SystemMenu>>('/sys_menu/list');
 }
 
+/**
+ * 获取角色权限id列表
+ */
+export const apiGetRolePermissions = async (
+  roleId: number,
+): Promise<Array<number>> => {
+  return requestClient.get('/sys_menu/role_permissions', {
+    params: { roleId },
+  });
+};
+
 export { getMenuList };

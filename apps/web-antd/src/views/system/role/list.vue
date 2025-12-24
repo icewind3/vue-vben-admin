@@ -23,6 +23,7 @@ import {
 import { $t } from '#/locales';
 
 import { useColumns, useGridFormSchema } from './data';
+import Authorize from './module/authorize.vue';
 import Form from './module/form.vue';
 import View from './module/view.vue';
 
@@ -36,6 +37,11 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
 const [ViewDrawer, viewApi] = useVbenDrawer({
   connectedComponent: View,
   destroyOnClose: true,
+});
+
+const [AuthorizeDrawer, authorizeApi] = useVbenDrawer({
+  connectedComponent: Authorize,
+  destroyOnClose: false,
 });
 
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -73,6 +79,10 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 function onActionClick({ code, row }: OnActionClickParams<SysRoleApi.SysRole>) {
   switch (code) {
+    case 'authorize': {
+      onAuthorize(row);
+      break;
+    }
     case 'delete': {
       onDelete(row);
       break;
@@ -82,7 +92,7 @@ function onActionClick({ code, row }: OnActionClickParams<SysRoleApi.SysRole>) {
       break;
     }
     case 'view': {
-      handleView(row);
+      onView(row);
       break;
     }
   }
@@ -124,7 +134,7 @@ async function onStatusChange(newStatus: boolean, row: SysRoleApi.SysRole) {
       `你要将${row.name}的状态切换为 【${status[newStatus.toString()]}】 吗？`,
       `切换状态`,
     );
-    await apiSysRoleUpdateStatus(row.id, { enabled: newStatus });
+    await apiSysRoleUpdateStatus({ id: row.id, enabled: newStatus });
     return true;
   } catch {
     return false;
@@ -135,8 +145,8 @@ function onEdit(row: SysRoleApi.SysRole) {
   formDrawerApi.setData(row).open();
 }
 
-function handleView(row: SysRoleApi.SysRole) {
-  const res = apiSysRoleView({ id: row.id });
+async function onView(row: SysRoleApi.SysRole) {
+  const res = await apiSysRoleView(row.id);
   viewApi.setData(res).open();
 }
 
@@ -159,6 +169,10 @@ function onDelete(row: SysRoleApi.SysRole) {
     });
 }
 
+function onAuthorize(row: SysRoleApi.SysRole) {
+  authorizeApi.setData(row).open();
+}
+
 function onRefresh() {
   gridApi.query();
 }
@@ -171,8 +185,9 @@ function onCreate() {
   <Page auto-content-height>
     <FormDrawer @success="onRefresh" />
     <ViewDrawer />
-    <Grid table-title="角色列表">
-      <template #toolbar-tools>
+    <AuthorizeDrawer />
+    <Grid>
+      <template #toolbar-actions>
         <Button
           type="primary"
           @click="onCreate"

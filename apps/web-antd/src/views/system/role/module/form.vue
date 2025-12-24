@@ -1,19 +1,11 @@
 <script lang="ts" setup>
-import type { DataNode } from 'ant-design-vue/es/tree';
-
-import type { Recordable } from '@vben/types';
-
 import type { SysRoleApi } from '#/api/system/sysRole';
 
-import { computed, nextTick, ref } from 'vue';
+import { useVbenDrawer } from '@vben/common-ui';
 
-import { Tree, useVbenDrawer } from '@vben/common-ui';
-import { IconifyIcon } from '@vben/icons';
-
-import { Spin } from 'ant-design-vue';
+import { message } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { getMenuList } from '#/api/system/sysMenu';
 import { apiSysRoleCreate, apiSysRoleUpdate } from '#/api/system/sysRole';
 import { $t } from '#/locales';
 
@@ -28,23 +20,27 @@ const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
 });
 
-const permissions = ref<DataNode[]>([]);
-const loadingPermissions = ref(false);
-
 const id = ref();
+const isEdit = ref(false);
 const [Drawer, drawerApi] = useVbenDrawer({
   async onConfirm() {
     const { valid } = await formApi.validate();
     if (!valid) return;
     const values = await formApi.getValues();
     drawerApi.lock();
-    (id.value ? apiSysRoleUpdate(id.value, values) : apiSysRoleCreate(values))
+    drawerApi.setState({ confirmLoading: true });
+    (id.value
+      ? apiSysRoleUpdate({ id: id.value, ...values })
+      : apiSysRoleCreate(values)
+    )
       .then(() => {
         emits('success');
+        message.success(isEdit ? '修改成功' : '新增成功');
         drawerApi.close();
       })
       .catch(() => {
         drawerApi.unlock();
+        drawerApi.setState({ confirmLoading: false });
       });
   },
 
@@ -56,12 +52,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
       if (data) {
         formData.value = data;
         id.value = data.id;
+        isEdit.value = true;
       } else {
         id.value = undefined;
-      }
-
-      if (permissions.value.length === 0) {
-        await loadPermissions();
       }
       // Wait for Vue to flush DOM updates (form fields mounted)
       await nextTick();
@@ -72,71 +65,15 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
 });
 
-async function loadPermissions() {
-  loadingPermissions.value = true;
-  try {
-    const res = await getMenuList();
-    permissions.value = res as unknown as DataNode[];
-  } finally {
-    loadingPermissions.value = false;
-  }
-}
-
 const getDrawerTitle = computed(() => {
   return formData.value?.id
     ? $t('common.edit', '角色')
     : $t('common.create', '角色');
 });
-
-function getNodeClass(node: Recordable<any>) {
-  const classes: string[] = [];
-  if (node.value?.type === 'button') {
-    classes.push('inline-flex');
-  }
-
-  return classes.join(' ');
-}
 </script>
 <template>
   <Drawer :title="getDrawerTitle">
-    <Form>
-      <template #permissions="slotProps">
-        <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
-          <Tree
-            :tree-data="permissions"
-            multiple
-            bordered
-            :default-expanded-level="2"
-            :get-node-class="getNodeClass"
-            v-bind="slotProps"
-            value-field="id"
-            label-field="meta.title"
-            icon-field="meta.icon"
-          >
-            <template #node="{ value }">
-              <IconifyIcon v-if="value.meta.icon" :icon="value.meta.icon" />
-              {{ $t(value.meta.title) }}
-            </template>
-          </Tree>
-        </Spin>
-      </template>
-    </Form>
+    <Form />
   </Drawer>
 </template>
-<style lang="css" scoped>
-:deep(.ant-tree-title) {
-  .tree-actions {
-    display: none;
-    margin-left: 20px;
-  }
-}
-
-:deep(.ant-tree-title:hover) {
-  .tree-actions {
-    display: flex;
-    flex: auto;
-    justify-content: flex-end;
-    margin-left: 20px;
-  }
-}
-</style>
+<style lang="css" scoped></style>
