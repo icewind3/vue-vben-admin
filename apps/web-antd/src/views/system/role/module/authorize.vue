@@ -24,6 +24,7 @@ const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
 });
 
+const id = ref();
 const permissions = ref<DataNode[]>([]);
 const loadingPermissions = ref(false);
 
@@ -33,7 +34,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (!valid) return;
     const values = await formApi.getValues();
     drawerApi.lock();
-    apiSysRoleAuthorize({ id: values.id, permissions: values.permissions })
+    apiSysRoleAuthorize({ id: id.value, permissions: values.permissions })
       .then(() => {
         emits('success');
         message.success('授权成功');
@@ -57,6 +58,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
       // Wait for Vue to flush DOM updates (form fields mounted)
       await nextTick();
       if (data) {
+        id.value = data.id;
         formApi.setValues({ permissions: res, ...data });
       }
     }

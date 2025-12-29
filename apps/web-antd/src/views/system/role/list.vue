@@ -13,6 +13,7 @@ import { Plus } from '@vben/icons';
 
 import { Button, message, Modal } from 'ant-design-vue';
 
+import { defaultFormConfig } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   apiSysRoleDelete,
@@ -54,6 +55,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
       ],
     ],
     schema: useGridFormSchema(),
+    ...defaultFormConfig,
   },
   gridOptions: {
     columns: useColumns(
